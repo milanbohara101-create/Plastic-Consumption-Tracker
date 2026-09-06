@@ -26,12 +26,12 @@ import type { JournalEntry, ChatMessage, SustainabilitySummary, ImpactWallData, 
 import appConfig from '../../firebase-applet-config.json';
 
 const firebaseConfig = {
-  projectId: appConfig.projectId,
-  appId: appConfig.appId,
-  apiKey: appConfig.apiKey,
-  authDomain: appConfig.authDomain,
-  storageBucket: appConfig.storageBucket,
-  messagingSenderId: appConfig.messagingSenderId,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || appConfig.projectId,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || appConfig.appId,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || appConfig.apiKey,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || appConfig.authDomain,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || appConfig.storageBucket,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || appConfig.messagingSenderId,
 };
 
 // Initialize Firebase App singleton
@@ -43,8 +43,9 @@ export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 // Initialize Firestore (using custom databaseId if configured)
-export const db = appConfig.firestoreDatabaseId && appConfig.firestoreDatabaseId !== '(default)'
-  ? getFirestore(app, appConfig.firestoreDatabaseId)
+const firestoreDbId = import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || appConfig.firestoreDatabaseId;
+export const db = firestoreDbId && firestoreDbId !== '(default)'
+  ? getFirestore(app, firestoreDbId)
   : getFirestore(app);
 
 // Strict Undefined-Stripping (Zero-Crash Payload Hygiene)

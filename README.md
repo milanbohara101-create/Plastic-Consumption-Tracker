@@ -59,23 +59,23 @@ Plastic Consumption Tracker transforms personal plastic awareness into actionabl
 ```mermaid
 flowchart TD
     subgraph Client ["Client Layer (React 19 + Tailwind CSS 4 + Vite)"]
-        UI[Single Page App UI]
-        AuthC[Firebase Auth Client]
-        FSC[Firestore Client SDK]
+        UI["Single Page App UI"]
+        AuthC["Firebase Auth Client"]
+        FSC["Firestore Client SDK"]
     end
 
     subgraph Backend ["Server Layer (Express + Node.js TS / tsx)"]
-        Server[Express Server :3000]
+        Server["Express Server (:3000)"]
         Router["/api/* Endpoints"]
-        Fallback[Resilient Fallback Ladder Engine]
-        Sanitizer[Payload Sanitizer & Undefined-Stripper]
+        Fallback["Resilient Fallback Ladder Engine"]
+        Sanitizer["Payload Sanitizer & Undefined-Stripper"]
     end
 
     subgraph CloudServices ["Google Cloud & Firebase Infrastructure"]
-        GCPSecret[Google Cloud Secret Manager]
-        Gemini[Google Gemini API @google/genai]
-        FirebaseAuth[Firebase Authentication]
-        Firestore[Cloud Firestore Database]
+        GCPSecret["Google Cloud Secret Manager"]
+        Gemini["Google Gemini API (@google/genai)"]
+        FirebaseAuth["Firebase Authentication"]
+        Firestore["Cloud Firestore Database"]
     end
 
     UI -->|HTTP / JSON Requests| Server
@@ -98,24 +98,24 @@ flowchart TD
 ```mermaid
 stateDiagram-v2
     [*] --> LandingPage
-    LandingPage --> GoogleAuth : Click 'Continue with Google'
-    LandingPage --> GuestAuth : Click 'Explore as Sandbox Guest'
+    LandingPage --> GoogleAuth : Continue with Google
+    LandingPage --> GuestAuth : Explore as Sandbox Guest
     GoogleAuth --> Dashboard : Auth Success
     GuestAuth --> Dashboard : Guest Session Initialized
 
     state Dashboard {
         [*] --> QuickOverview
-        QuickOverview --> JournalView : Select 'Daily Journal'
-        QuickOverview --> ScannerView : Select 'Plastic Scanner'
-        QuickOverview --> CoachView : Select 'Gemini Coach'
-        QuickOverview --> AnalyticsView : Select 'Progress & Trends'
-        QuickOverview --> ImpactWallView : Select 'Impact Wall'
-        QuickOverview --> InsightsView : Select 'Weekly/Monthly Insights'
-        QuickOverview --> HistoryView : Select 'History'
-        QuickOverview --> QuickAddModal : Click '+ Quick Add' Button
+        QuickOverview --> JournalView : Daily Journal
+        QuickOverview --> ScannerView : Plastic Scanner
+        QuickOverview --> CoachView : Gemini Coach
+        QuickOverview --> AnalyticsView : Progress & Trends
+        QuickOverview --> ImpactWallView : Impact Wall
+        QuickOverview --> InsightsView : Insights
+        QuickOverview --> HistoryView : History
+        QuickOverview --> QuickAddModal : Quick Add Button
     }
 
-    Dashboard --> LandingPage : Click 'Sign Out'
+    Dashboard --> LandingPage : Sign Out
 ```
 
 ---
@@ -131,16 +131,16 @@ sequenceDiagram
     participant FS as Cloud Firestore
     participant App as App State & ImpactWall
 
-    User->>Modal: Click '+ Quick Add' (Header or Dashboard)
+    User->>Modal: Click Quick Add button
     Modal->>Storage: Load recently logged item chips
     Modal-->>User: Display category pills, quantity stepper, action buttons
-    User->>Modal: Select item (e.g. "Plastic Bottle"), count=2, action="Avoided"
+    User->>Modal: Select item (e.g. Plastic Bottle, count=2, action=Avoided)
     opt Optional Camera Photo
-        User->>Modal: Click "Attach Photo" -> Capture or Upload Image
+        User->>Modal: Attach Photo (Capture or Upload Image)
     end
-    User->>Modal: Click "Save Entry"
+    User->>Modal: Click Save Entry
     Modal->>Modal: Sanitize payload & strip undefined values
-    Modal->>FS: Write to /users/{uid}/journalEntries/{entryId}
+    Modal->>FS: Write to /users/:uid/journalEntries/:entryId
     FS-->>Modal: Write Confirmed
     Modal->>App: Trigger onEntrySaved & onShowNotification
     App->>App: Increment Impact Wall totals & refresh History list
@@ -153,24 +153,24 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[User Opens Plastic Scanner] --> B{Choose Input Method}
-    B -->|Camera Stream| C[Capture Snapshot via HTML5 Canvas]
-    B -->|File Uploader| D[Select Local Photo File]
-    C --> E[Compress & Base64 Encode JPEG/PNG]
+    A["User Opens Plastic Scanner"] --> B{"Choose Input Method"}
+    B -->|Camera Stream| C["Capture Snapshot via HTML5 Canvas"]
+    B -->|File Uploader| D["Select Local Photo File"]
+    C --> E["Compress & Base64 Encode JPEG/PNG"]
     D --> E
-    E --> F[POST /api/scans/analyze with Base64 Payload]
-    F --> G[Express Server: Validate MIME & Size < 10MB]
-    G --> H[Invoke Gemini Multimodal Vision API]
-    H --> I{Model Success?}
-    I -->|Yes| J[Extract JSON Resin Code #1-#7, Confidence, Clues, Eco Swaps]
-    I -->|Failure / Rate Limit| K[Engage Resilient Fallback Ladder]
+    E --> F["POST /api/scans/analyze with Base64 Payload"]
+    F --> G["Express Server: Validate MIME & Size (< 10MB)"]
+    G --> H["Invoke Gemini Multimodal Vision API"]
+    H --> I{"Model Success?"}
+    I -->|Yes| J["Extract JSON: Resin Code #1–#7, Confidence, Clues, Swaps"]
+    I -->|Failure / Rate Limit| K["Engage Resilient Fallback Ladder"]
     K --> J
-    J --> L[Display Result Card with Visual Badge]
-    L --> M{User Actions}
-    M -->|Option 1| N[Add Scanned Item to Daily Journal with 1 Click]
-    M -->|Option 2| O[Consult Gemini Coach for Plastic-Free Alternatives]
-    M -->|Option 3| P[Override Detected Resin Type Manually]
-    M -->|Option 4| Q[Save Scan to History Grid /users/{uid}/scans]
+    J --> L["Display Result Card with Visual Badge"]
+    L --> M{"User Actions"}
+    M -->|Option 1| N["Add Scanned Item to Daily Journal"]
+    M -->|Option 2| O["Consult Gemini Coach for Alternatives"]
+    M -->|Option 3| P["Override Detected Resin Type Manually"]
+    M -->|Option 4| Q["Save Scan to History Grid in User Scans"]
 ```
 
 ---
@@ -180,23 +180,23 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph DataSources ["Logged Sources"]
-        J[Daily Journal Entries]
-        Q[Quick Add Entries]
-        S[Saved Scans]
-        M[Manual Adjustments]
+        J["Daily Journal Entries"]
+        Q["Quick Add Entries"]
+        S["Saved Scans"]
+        M["Manual Adjustments"]
     end
 
     subgraph Calculator ["Impact Calculator Engine (impactCalculator.ts)"]
-        Agg[Aggregate Avoided & Reused Items]
-        Weights[Compute Avoided Grams of Plastic]
-        Carbon[Calculate CO2eq Saved]
-        Badges[Evaluate 6-Tier Milestone Criteria]
+        Agg["Aggregate Avoided & Reused Items"]
+        Weights["Compute Avoided Grams of Plastic"]
+        Carbon["Calculate CO2eq Saved"]
+        Badges["Evaluate 6-Tier Milestone Criteria"]
     end
 
     subgraph Output ["Impact Wall Presentation"]
-        Stats[Cumulative Metrics Cards]
-        TierList[Milestone Badges Grid]
-        AIEncouragement[Gemini Personalized Celebration Card]
+        Stats["Cumulative Metrics Cards"]
+        TierList["Milestone Badges Grid"]
+        AIEncouragement["Gemini Personalized Celebration Card"]
     end
 
     J --> Agg
@@ -215,17 +215,17 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    Req[Incoming Server-Side AI Request] --> M1[Try Primary: gemini-3.1-flash-lite]
-    M1 -->|Success| Out[Return Validated JSON / Text Payload]
-    M1 -->|503 / 429 / 404 / 500| M2[Try High-Availability: gemini-3.6-flash]
+    Req["Incoming Server-Side AI Request"] --> M1["Try Primary: gemini-3.1-flash-lite"]
+    M1 -->|Success| Out["Return Validated JSON / Text Payload"]
+    M1 -->|503 / 429 / 404 / 500| M2["Try High-Availability: gemini-3.6-flash"]
     M2 -->|Success| Out
-    M2 -->|Error| M3[Try Dynamic Alias: gemini-flash-latest]
+    M2 -->|Error| M3["Try Dynamic Alias: gemini-flash-latest"]
     M3 -->|Success| Out
-    M3 -->|Error| M4[Try Alternate: gemini-3.8-flash]
+    M3 -->|Error| M4["Try Alternate: gemini-3.8-flash"]
     M4 -->|Success| Out
-    M4 -->|Error| M5[Try Deep Reasoning: gemini-3.7-flash]
+    M4 -->|Error| M5["Try Deep Reasoning: gemini-3.7-flash"]
     M5 -->|Success| Out
-    M5 -->|All Models Fail| FallbackResponse[Return Deterministic Calculation or Graceful Fallback]
+    M5 -->|All Models Fail| FallbackResponse["Return Deterministic Calculation or Graceful Fallback"]
 ```
 
 ---
@@ -427,10 +427,19 @@ All AI operations and image handling run server-side via Express on port `3000`.
    ```bash
    cp .env.example .env
    ```
-   Open `.env` and configure your API key:
+   Open `.env` and configure your API keys:
    ```env
-   GEMINI_API_KEY="AIzaSyYourRealGeminiKeyHere"
+   GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
    APP_URL="http://localhost:3000"
+
+   # Firebase Client Config (kept in gitignored .env to prevent public leaks)
+   VITE_FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
+   VITE_FIREBASE_PROJECT_ID="YOUR_FIREBASE_PROJECT_ID"
+   VITE_FIREBASE_APP_ID="YOUR_FIREBASE_APP_ID"
+   VITE_FIREBASE_AUTH_DOMAIN="YOUR_PROJECT_ID.firebaseapp.com"
+   VITE_FIREBASE_FIRESTORE_DATABASE_ID="YOUR_DATABASE_ID"
+   VITE_FIREBASE_STORAGE_BUCKET="YOUR_PROJECT_ID.firebasestorage.app"
+   VITE_FIREBASE_MESSAGING_SENDER_ID="YOUR_MESSAGING_SENDER_ID"
    ```
 
 4. **Start the Development Server**:
@@ -597,6 +606,38 @@ Our security posture strictly adheres to the OWASP Top 10 for Web Applications a
 | **Tool Execution & API Access** | Client-side API key leakage, unauthorized AI quota consumption, path traversal during image save/delete. | Keep Gemini API calls strictly on backend (`process.env.GEMINI_API_KEY`); strictly sanitize file paths using `path.basename` to prevent traversal. |
 | **Memory & State** | Cross-tenant data leaks in Firestore, ID spoofing, or storing raw base64 images in Firestore. | Strict owner-bound rules (`/users/{userId}/...`), Zero Insecure Defaults in `firestore.rules`, and storing only server-managed image paths in Firestore (never raw base64). |
 | **Inter-System Communication** | Network interception, token leakage during authentication, or missing server verification. | Use Firebase Authentication with Google Sign-In, HTTPS transport, and sanitize payloads with strict undefined-stripping prior to persistence. |
+
+---
+
+### Resolving GitHub Secret Scanning Alerts & Key Protection
+
+If GitHub Secret Scanning triggers an alert (e.g., `Detected secret in firebase-applet-config.json:4`):
+
+#### 1. Architecture Remediation Applied
+- **Scrubbed Configuration File**: The raw API key has been removed from `firebase-applet-config.json`.
+- **Protected Environment Variables**: Firebase client credentials are now loaded via Vite environment variables (`VITE_FIREBASE_API_KEY`) from `.env`.
+- **Gitignore Protection**: `.env*` and `firebase-applet-config.json` are explicitly added to `.gitignore`. An example template `firebase-applet-config.example.json` is provided for new environments.
+- **Dynamic Fallback in Code**: `src/lib/firebase.ts` dynamically prioritizes `import.meta.env` with fallback to configuration files.
+
+#### 2. Restricting the Key in Google Cloud Console
+Google Firebase web API keys are client-facing identifiers used by the Firebase SDK to route requests to your Firebase project. To ensure the key cannot be abused if discovered:
+1. Go to **[Google Cloud Console -> APIs & Services -> Credentials](https://console.cloud.google.com/apis/credentials)**.
+2. Select your Firebase Web API Key.
+3. Under **Application restrictions**, choose **Websites (HTTP referrers)** and add your authorized domains:
+   - `http://localhost:3000/*`
+   - `https://your-cloud-run-service-url.run.app/*`
+4. Under **API restrictions**, choose **Restrict key** and restrict access strictly to:
+   - **Identity Toolkit API**
+   - **Cloud Firestore API**
+   - **Token Service API**
+5. Save changes.
+
+#### 3. Closing the GitHub Alert
+1. In your GitHub repository, navigate to the **Security** tab -> **Secret scanning alerts**.
+2. Open Alert #1 (**Google API Key**).
+3. Once you push your commit with the updated `.gitignore` and sanitized `firebase-applet-config.json`, click **Close alert** and choose:
+   - **Revoked** (if you generated a fresh key in Google Cloud Console), OR
+   - **False positive / Allowed** (after applying the HTTP referrer and API restrictions above).
 
 ---
 
